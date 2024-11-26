@@ -1,4 +1,4 @@
-module server
+module ServerFinal
 
 go 1.23.2
 

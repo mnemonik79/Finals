@@ -3,6 +3,11 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"ServerFinal/internal/authtentification"
+	"ServerFinal/internal/database"
+	"ServerFinal/internal/handlers"
+	"ServerFinal/internal/settings"
+	"ServerFinal/internal/store"
 
 	"github.com/go-chi/chi"
 )
