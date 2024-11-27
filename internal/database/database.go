@@ -15,7 +15,7 @@ func InitializeDatabase() *sql.DB {
 		log.Fatal(err)
 	}
 
-	dbFile := filepath.Join(filepath.Dir(appPath), "ServerFinal", "scheduler.db")
+	dbFile := filepath.Join(filepath.Dir(appPath), "Finals", "scheduler.db")
 	environment := os.Getenv("TODO_DBFILE")
 	if len(environment) > 0 {
 		dbFile = environment
