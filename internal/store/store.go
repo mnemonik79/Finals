@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"strconv"
 	"time"
-	"ServerFinal/internal/donetaskrepeat"
-	"ServerFinal/internal/settings"
-	"ServerFinal/internal/tasks"
+
+	iteration "github.com/mnemonik79/internal/donetaskrepeat"
+
+	"github.com/mnemonik79/Finals/internal/settings"
+	"github.com/mnemonik79/Finals/internal/tasks"
 )
 
 const (
@@ -161,7 +163,7 @@ func (s *Store) DoneTask(id string) error {
 			return fmt.Errorf(`{"error":"не получается удалить задачу"}`)
 		}
 	} else {
-		next, err := donetaskrepeat.NextDate(time.Now(), task.Date, task.Repeat)
+		next, err := iteration.NextDate(time.Now(), task.Date, task.Repeat)
 		if err != nil {
 			return fmt.Errorf(`{"error":"неверное правило повторения"}`)
 		}
