@@ -5,10 +5,12 @@ import (
 	"log"
 	"net/http"
 	"time"
-	"ServerFinal/internal/donetaskrepeat"
-	"ServerFinal/internal/settings"
-	"ServerFinal/internal/store"
-	"ServerFinal/internal/tasks"
+
+	iteration "github.com/mnemonik79/internal/donetaskrepeat"
+
+	"github.com/mnemonik79/Finals/internal/settings"
+	"github.com/mnemonik79/Finals/internal/store"
+	"github.com/mnemonik79/Finals/internal/tasks"
 )
 
 type ResponseJson struct {
@@ -26,7 +28,7 @@ func HandleNextDate(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	nextdate, err := donetaskrepeat.NextDate(now, date, strRepeat)
+	nextdate, err := iteration.NextDate(now, date, strRepeat)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
