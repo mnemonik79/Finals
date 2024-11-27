@@ -1,4 +1,4 @@
-package donetaskrepeat
+package iteration
 
 import (
 	"fmt"
@@ -6,7 +6,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"ServerFinal/internal/settings"
+
+	"github.com/mnemonik79/Finals/internal/settings"
 )
 
 func nextWeekDay(now, startDate time.Time, daysOfWeek []int) (string, error) {
