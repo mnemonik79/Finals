@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"strconv"
 	"time"
-	"ServerFinal/internal/donetaskrepeat"
-	"ServerFinal/internal/settings"
-)
 
+	"github.com/mnemonik79/Finals/internal/settings"
+)
+ 
 type Task struct {
 	ID      string `json:"id"`
 	Date    string `json:"date"`
