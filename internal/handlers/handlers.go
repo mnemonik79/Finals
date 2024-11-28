@@ -6,8 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	iteration "github.com/mnemonik79/internal/donetaskrepeat"
-
+	iterals "github.com/mnemonik79/Finals/internal/donetaskrepeat"
 	"github.com/mnemonik79/Finals/internal/settings"
 	"github.com/mnemonik79/Finals/internal/store"
 	"github.com/mnemonik79/Finals/internal/tasks"
@@ -28,7 +27,7 @@ func HandleNextDate(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	nextdate, err := iteration.NextDate(now, date, strRepeat)
+	nextdate, err := iterals.NextDate(now, date, strRepeat)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -39,75 +38,77 @@ func HandleNextDate(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func HandlePostGetPutRequests(store store.Store) http.HandlerFunc {
+func HandlePost(store store.Store) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var t tasks.Task
-		switch r.Method {
-		case http.MethodPost:
-			err := json.NewDecoder(r.Body).Decode(&t)
-			if err != nil {
-				http.Error(w, `{"error":"ошибка десериализации JSON"}`, http.StatusBadRequest)
-				return
-			}
-			id, err := store.CreateTask(t)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
+		err := json.NewDecoder(r.Body).Decode(&t)
+		if err != nil {
+			http.Error(w, `{"error":"ошибка десериализации JSON"}`, http.StatusBadRequest)
+			return
+		}
+		id, err := store.CreateTask(t)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		resp := ResponseJson{ID: id}
+		w.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			http.Error(w, `{"error":"Ошибка кодирования JSON"}`, http.StatusInternalServerError)
+			return
+		}
+	}
+}
 
-			resp := ResponseJson{ID: id}
+func HandleGet(store store.Store) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id := r.URL.Query().Get("id")
+		task, err := store.GetTask(id)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(w).Encode(task); err != nil {
+			http.Error(w, `{"error":"Ошибка кодирования JSON"}`, http.StatusInternalServerError)
+			return
+		}
 
-			w.Header().Set("Content-Type", "application/json")
-			if err := json.NewEncoder(w).Encode(resp); err != nil {
-				http.Error(w, `{"error":"Ошибка кодирования JSON"}`, http.StatusInternalServerError)
-				return
-			}
+	}
+}
 
-		case http.MethodGet:
-			id := r.URL.Query().Get("id")
-			task, err := store.GetTask(id)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			w.Header().Set("Content-Type", "application/json")
-			if err := json.NewEncoder(w).Encode(task); err != nil {
-				http.Error(w, `{"error":"Ошибка кодирования JSON"}`, http.StatusInternalServerError)
-				return
-			}
+func HandlePut(store store.Store) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var t tasks.Task
+		err := json.NewDecoder(r.Body).Decode(&t)
+		if err != nil {
+			http.Error(w, `{"error":"ошибка десериализации JSON"}`, http.StatusBadRequest)
+			return
+		}
+		err = store.UpdateTask(t)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(w).Encode(map[string]string{}); err != nil {
+			http.Error(w, `{"error":"Ошибка кодирования JSON"}`, http.StatusInternalServerError)
+			return
+		}
+	}
+}
 
-		case http.MethodPut:
-			err := json.NewDecoder(r.Body).Decode(&t)
-			if err != nil {
-				http.Error(w, `{"error":"ошибка десериализации JSON"}`, http.StatusBadRequest)
-				return
-			}
-			err = store.UpdateTask(t)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			w.Header().Set("Content-Type", "application/json")
-			if err := json.NewEncoder(w).Encode(map[string]string{}); err != nil {
-				http.Error(w, `{"error":"Ошибка кодирования JSON"}`, http.StatusInternalServerError)
-				return
-			}
-
-		case http.MethodDelete:
-			id := r.URL.Query().Get("id")
-			err := store.DeleteTask(id)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			w.Header().Set("Content-Type", "application/json")
-			if err := json.NewEncoder(w).Encode(map[string]string{}); err != nil {
-				http.Error(w, `{"error":"Ошибка кодирования JSON"}`, http.StatusInternalServerError)
-				return
-			}
-
-		default:
-			http.Error(w, `{"error":"Ошибка метода запроса"}`, http.StatusBadRequest)
+func HandleRequests(store store.Store) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id := r.URL.Query().Get("id")
+		err := store.DeleteTask(id)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(w).Encode(map[string]string{}); err != nil {
+			http.Error(w, `{"error":"Ошибка кодирования JSON"}`, http.StatusInternalServerError)
 			return
 		}
 	}
