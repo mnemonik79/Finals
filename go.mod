@@ -1,4 +1,4 @@
-module server
+module github.com/mnemonik79/Finals
 
 go 1.23.2
 
