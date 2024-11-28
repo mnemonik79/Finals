@@ -6,8 +6,7 @@ import (
 	"strconv"
 	"time"
 
-	iteration "github.com/mnemonik79/internal/donetaskrepeat"
-
+	iterals "github.com/mnemonik79/Finals/internal/donetaskrepeat"
 	"github.com/mnemonik79/Finals/internal/settings"
 	"github.com/mnemonik79/Finals/internal/tasks"
 )
@@ -163,7 +162,7 @@ func (s *Store) DoneTask(id string) error {
 			return fmt.Errorf(`{"error":"не получается удалить задачу"}`)
 		}
 	} else {
-		next, err := iteration.NextDate(time.Now(), task.Date, task.Repeat)
+		next, err := iterals.NextDate(time.Now(), task.Date, task.Repeat)
 		if err != nil {
 			return fmt.Errorf(`{"error":"неверное правило повторения"}`)
 		}
@@ -174,6 +173,5 @@ func (s *Store) DoneTask(id string) error {
 	if err != nil {
 		return fmt.Errorf(`{"error":"Ошибка обновления даты выполнения задачи"}`)
 	}
-	fmt.Println(task)
 	return nil
 }
