@@ -24,12 +24,12 @@ func main() {
 	r := chi.NewRouter()
 	r.Handle("/*", http.FileServer(http.Dir("./web")))
 	r.Get("/api/nextdate", handlers.HandleNextDate)
-	r.Post("/api/task", auth.Authentification(handlers.HandlePostGetPutRequests(store)))
+	r.Post("/api/task", auth.Authentification(handlers.HandlePost(store)))
 	r.Get("/api/tasks", auth.Authentification(handlers.HandleTasksGet(store)))
-	r.Get("/api/task", handlers.HandlePostGetPutRequests(store))
-	r.Put("/api/task", handlers.HandlePostGetPutRequests(store))
+	r.Get("/api/task", handlers.HandleGet(store))
+	r.Put("/api/task", handlers.HandlePost(store))
 	r.Post("/api/task/done", auth.Authentification(handlers.HandleTaskDone(store)))
-	r.Delete("/api/task", handlers.HandlePostGetPutRequests(store))
+	r.Delete("/api/task", handlers.HandleRequests(store))
 	r.Post("/api/signin", auth.HandleSiginingIn)
 
 	environment := settings.GetEnv()
@@ -42,4 +42,5 @@ func main() {
 	} else {
 		infoLog.Print("Запуск сервера")
 	}
+
 }
